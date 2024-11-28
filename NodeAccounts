@@ -1,0 +1,17 @@
+package AdminLib;
+
+public class NodeAccounts {
+    String userName, password, eMail, contactNum, role;
+    int memberID;
+    NodeAccounts next;
+
+    public NodeAccounts(String userName, String password, String eMail, String contactNum, int memberID, String role) {
+        this.userName = userName;
+        this.password = password;
+        this.eMail = eMail;
+        this.contactNum = contactNum;
+        this.memberID = memberID;
+        this.role = role;
+        this.next = null;
+    }
+}
