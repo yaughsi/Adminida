@@ -1,0 +1,229 @@
+package AdminLib;
+
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+public class adminCOA extends JFrame{
+    JPanel pan5 = new JPanel();
+    JPanel pan6 = new JPanel();
+    JPanel pan7 = new JPanel();
+    JLabel amlbl = new JLabel("Account Management");
+    JTable accountTable = new JTable();
+    JScrollPane accountTableScp = new JScrollPane(accountTable);
+    JTextField searchField = new JTextField();
+    JButton searchbtn = new JButton("Search");
+    JButton addAccount = new JButton("Add Account");
+    JButton deleteAccount = new JButton("Delete Account");
+    JButton unblockAccount = new JButton("Unblock Account"); // no function yet
+    JButton changePassword = new JButton("Change Password"); 
+    JButton backbtnCOA = new JButton("Back");
+    JComboBox<String> userCategory = new JComboBox<>(new String[]{"All Accounts", "Librarian Accounts", "Admin Accounts", "User Accounts", "Blocked Accounts"});
+
+    static String[] columnsForAccounts = {"Member ID", "Username", "Email", "Contact", "Role"};
+    static DefaultTableModel accountTableModel = new DefaultTableModel(columnsForAccounts, 0);
+
+    LinkedListAccounts accounts = new LinkedListAccounts();
+
+    public adminCOA() {
+        accounts.createAccount("joshisaiah", "joshhh", "jid@gmail.com", "09946722588", "librarian");
+        accounts.createAccount("marie", "marie445", "mariemarie@gmail.com", "09257793216", "librarian");
+        accounts.createAccount("armansalon76", "juskopoh_", "armansalon@gmail.com", "09917734299", "librarian");
+        accounts.createAccount("admin123", "adminpass", "admin@example.com", "09012345678", "admin");
+        
+        pan5.setBackground(new Color(0x99582A));
+        pan5.setLayout(null);
+        pan5.setPreferredSize(new Dimension(800, 875));
+
+        pan6.setBackground(new Color(0x6F1D1B));
+        pan6.setLayout(null);
+        pan6.setBounds(850, 86, 758, 840);
+        
+        pan7.setLayout(null);
+        pan7.setBackground(new Color(0xD9D9D9));
+        pan7.setBounds(0, 0, 1530, 86);
+
+        amlbl.setBounds(70, 21, 560, 77);
+        amlbl.setFont(new Font("Bebas Neue", Font.BOLD, 50));
+        amlbl.setForeground(new Color(0xBB9457));
+
+        accountTable.setModel(accountTableModel);
+        accountTableScp.setBounds(50, 175, 780, 490);
+
+        searchField.setBounds(50, 125, 250, 30);
+        searchbtn.setBounds(310, 125, 100, 30);
+        userCategory.setBounds(420, 125, 200, 30);
+        
+        addAccount.setBounds(185, 200, 310, 88);
+        addAccount.setFont(new Font("Bebas Neue", Font.BOLD, 30));
+        addAccount.setForeground(new Color(0x6F1D1B));
+        addAccount.setBackground(new Color (0xD9D9D9));
+        
+        deleteAccount.setBounds(185, 350, 310, 88);
+        deleteAccount.setFont(new Font("Bebas Neue", Font.BOLD, 30));
+        deleteAccount.setForeground(new Color(0x6F1D1B));
+        deleteAccount.setBackground(new Color (0xBB9457));
+        
+        backbtnCOA.setBounds(185, 500, 310, 88);
+        backbtnCOA.setFont(new Font("Bebas Neue", Font.BOLD, 30));
+        backbtnCOA.setForeground(new Color(0x6F1D1B));
+        backbtnCOA.setBackground(new Color (0xD9D9D9));
+        backbtnCOA.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+               
+                   adminf dashb = new adminf();
+                   dashb.setVisible(true);
+                   
+                   ((JFrame) SwingUtilities.getWindowAncestor(backbtnCOA)).dispose();
+            }
+        });
+        
+        addAccount.addActionListener(e -> addAccountDialog());
+        deleteAccount.addActionListener(e -> {
+            int selectedRow = accountTable.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(null, "Please select an account to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                accounts.deleteAtPosition(selectedRow + 1); // Adjust for LinkedList 1-based index
+                loadAccounts("All Accounts");
+            }
+        });
+
+        userCategory.addActionListener(e -> filterAccounts());
+        searchbtn.addActionListener(e -> searchAccounts());
+        searchField.addActionListener(e -> searchAccounts());
+
+        
+        loadAccounts("All Accounts");
+        
+        pan5.add(pan6);
+        pan5.add(pan7);
+        pan5.add(accountTableScp);
+        pan5.add(searchField);
+        pan5.add(searchbtn);
+        pan5.add(userCategory);
+        
+        pan6.add(amlbl);
+        pan6.add(addAccount);
+        pan6.add(deleteAccount);
+        pan6.add(backbtnCOA);
+
+        this.add(pan5);
+        
+        this.setSize(1537, 875);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("Account Management");
+        this.setResizable(false);
+    }
+
+    private void addAccountDialog() {
+        JTextField usernameField = new JTextField();
+        JPasswordField passwordField = new JPasswordField();
+        JTextField emailField = new JTextField();
+        JTextField contactField = new JTextField();
+        JComboBox<String> roleField = new JComboBox<>(new String[]{"Librarian", "Admin"});
+
+        Object[] message = {
+            "Username:", usernameField,
+            "Password:", passwordField,
+            "Email:", emailField,
+            "Contact Number:", contactField,
+            "Role:", roleField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, "Add New Account", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            String username = usernameField.getText();
+            String password = new String(passwordField.getPassword());
+            String email = emailField.getText();
+            String contact = contactField.getText();
+            String role = (String) roleField.getSelectedItem();
+
+            accounts.insertAtBeginning(username, password, email, contact, role);
+            JOptionPane.showMessageDialog(null, "Account added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            loadAccounts("All Accounts");
+        }
+    }
+    private void filterAccounts() {
+        String selectedCategory = (String) userCategory.getSelectedItem();
+        loadAccounts(selectedCategory);
+    }
+
+    private void searchAccounts() {
+        String searchText = searchField.getText().trim();
+        if (searchText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter a search term.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+       
+        accountTableModel.setRowCount(0);
+        NodeAccounts current = accounts.getHead();
+        while (current != null) {
+            if (String.valueOf(current.memberID).contains(searchText) || 
+    current.userName.contains(searchText) || 
+    current.role.contains(searchText.toLowerCase())) {
+    accountTableModel.addRow(new Object[]{
+        current.memberID,
+        current.userName,
+        current.eMail,
+        current.contactNum,
+        current.role
+    });
+}
+
+            current = current.next;
+        }
+
+        if (accountTableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "No results found.", "Information", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void loadAccounts(String filterRole) {
+    accountTableModel.setRowCount(0); // Clear the table
+
+    NodeAccounts current = accounts.getHead();
+    while (current != null) {
+        boolean addRow = false;
+
+        // Determine if the row should be added based on the filter
+        if (filterRole.equals("All Accounts")) {
+            addRow = true; // Show all accounts
+        } else if (filterRole.equals("Librarian Accounts") && current.role.equals("librarian")) {
+            addRow = true;
+        } else if (filterRole.equals("Admin Accounts") && current.role.equals("admin")) {
+            addRow = true;
+        } else if (filterRole.equals("User Accounts") && current.role.equals("user")) {
+            addRow = true;
+        } else if (filterRole.equals("Blocked Accounts") && current.role.equals("blocked")) {
+            addRow = true;
+        }
+
+        // Add matching rows to the table
+        if (addRow) {
+            accountTableModel.addRow(new Object[]{
+                current.memberID,
+                current.userName,
+                current.eMail,
+                current.contactNum,
+                current.role
+            });
+        }
+
+        current = current.next;
+    }
+}
+
+
+    public static void main(String[] args) {
+        adminCOA create = new adminCOA();
+        create.setVisible(true);
+    }
+}
