@@ -1,0 +1,66 @@
+package AdminLib;
+
+import javax.swing.table.DefaultTableModel;
+
+public class LinkedListBookReport {
+
+    private NodeBookReports head;
+
+    public NodeBookReports getHead() {
+        return head;
+    }
+
+    // Method to insert a report at the end of the linked list
+    public void insertAtEnd(String date, String mostBorrowedBook, int totalBorrowedBooks, double totalFine) {
+        NodeBookReports newNode = new NodeBookReports(date, mostBorrowedBook, totalBorrowedBooks, totalFine);
+        
+        // If the list is empty, make the new node the head
+        if (head == null) {
+            head = newNode;
+        } else {
+            // Otherwise, find the last node and insert the new node after it
+            NodeBookReports current = head;
+            while (current.next != null) {
+                current = current.next;
+            }
+            current.next = newNode;
+        }
+    }
+
+    // Method to update a report in the list at a given index
+    public void updateReport(int index, String date, String mostBorrowedBook, int totalBorrowedBooks, double totalFine) {
+        NodeBookReports current = head;
+        int count = 0;
+        while (current != null) {
+            if (count == index) {
+                current.date = date;
+                current.mostBorrowedBook = mostBorrowedBook;
+                current.totalBorrowedBooks = totalBorrowedBooks;
+                current.totalFine = totalFine;
+                return;
+            }
+            current = current.next;
+            count++;
+        }
+    }
+
+    // Method to check if the list is empty
+    public boolean isEmpty() {
+        return head == null;
+    }
+
+    // Method to display reports (used in adminReports to display in JTable)
+    public void displayReports(DefaultTableModel reportTab) {
+        // Clear the table first
+        reportTab.setRowCount(0);
+
+        // Traverse the list and add each node's data to the table
+        NodeBookReports current = head;
+        while (current != null) {
+            reportTab.addRow(new Object[]{current.date, current.mostBorrowedBook, current.totalBorrowedBooks, current.totalFine});
+            current = current.next;
+        }
+    }
+}
+
+
