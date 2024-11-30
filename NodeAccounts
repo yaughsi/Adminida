@@ -1,11 +1,11 @@
 package AdminLib;
 
 public class NodeAccounts {
-    String userName, password, eMail, contactNum, role;
-    int memberID;
+    String userName, password, eMail, contactNum, role, memberID;
+    
     NodeAccounts next;
 
-    public NodeAccounts(String userName, String password, String eMail, String contactNum, int memberID, String role) {
+    public NodeAccounts(String userName, String password, String eMail, String contactNum, String memberID, String role) {
         this.userName = userName;
         this.password = password;
         this.eMail = eMail;
@@ -14,4 +14,59 @@ public class NodeAccounts {
         this.role = role;
         this.next = null;
     }
+    
+     public String getUserName() {
+        return userName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return eMail;
+    }
+    public String getRole() {
+        return role;
+    }
+
+    public String getContactNum() {
+        return contactNum;
+    }
+    public String getMemberID() {
+        return memberID;
+    }
+
+    public NodeAccounts getNext() {
+        return next;
+    }
+
+    // Setter methods for modifying book properties
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setContactNum(String contactNum) {
+        this.contactNum = contactNum;
+    }
+
+    public void setEmail(String eMail) {
+        this.eMail = eMail;
+    }
+    public void setMemberID() {
+        this.memberID = memberID;
+    }
+
+
+    public void setNext(NodeAccounts next) {
+        this.next = next;
+    }
+
 }
+
+
+
