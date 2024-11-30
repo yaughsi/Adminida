@@ -4,40 +4,35 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.LinkedList;
 
 public class adminReports extends JFrame {
+    private JPanel pan3 = new JPanel();
+    private JPanel pan4 = new JPanel();
+    private JPanel pan4_5 = new JPanel();
+    private JLabel genrep = new JLabel("Generate Reports");
+    private JLabel datelbl = new JLabel("Report Date");
+    private JLabel mostborrlbl = new JLabel("Most Borrowed Books");
+    private JLabel totalborrlbl = new JLabel("Total Borrowed Books");
+    private JLabel totalfinelbl = new JLabel("Total Fine");
+    private JLabel cat = new JLabel("Category");
+    private JTable table = new JTable();
+    private JScrollPane scpreports = new JScrollPane(table);
+    private JTextField datef = new JTextField();
+    private JTextField mostborrf = new JTextField();
+    private JTextField totalborrf = new JTextField();
+    private JTextField totalfinef = new JTextField();
+    private JComboBox<String> categoryBox = new JComboBox<>(new String[]{"Weekly", "Monthly", "Yearly"});
+    private JButton updatebtn = new JButton("Update Report");
+    private JButton viewbtn = new JButton("View Report");
+    private JButton backbtnReports = new JButton("Back");
 
-    JPanel pan3 = new JPanel();
-    JPanel pan4 = new JPanel();
-    JPanel pan4_5 = new JPanel();
-    JLabel genrep = new JLabel("Generate Reports");
-    JLabel datelbl = new JLabel("Report Date");
-    JLabel mostborrlbl = new JLabel("Most Borrowed Books");
-    JLabel totalborrlbl = new JLabel("Total Borrowed Books");
-    JLabel totalfinelbl = new JLabel("Total Fine");
-    JLabel cat = new JLabel("Category");
-    JTable table = new JTable();
-    JScrollPane tablescp = new JScrollPane(table);
-    JTextField datef = new JTextField();
-    JTextField totalborrf = new JTextField();
-    JTextField mostborrf = new JTextField();
-    JTextField totalfinef = new JTextField();
-    JComboBox<String> categoryBox = new JComboBox<>(new String[]{"Weekly", "Monthly", "Yearly"});
-    JButton updatebtn = new JButton("Update Report");
-    JButton viewbtn = new JButton("View Report");
-    JButton backbtnReports = new JButton("Back");
-    LinkedList<adminReports> weekly = new LinkedList<>();
-    LinkedList<adminReports> monthly = new LinkedList<>();
-    LinkedList<adminReports> yearly = new LinkedList<>();
-
-    final int maxWeek = 104; // equi to 2 years
-    final int maxMonth = 60; // 3 years
-    final int maxYear = 15; // 15 years
+    // Linked lists for weekly, monthly, yearly reports
+    private LinkedListBookReport weeklyReports = new LinkedListBookReport();
+    private LinkedListBookReport monthlyReports = new LinkedListBookReport();
+    private LinkedListBookReport yearlyReports = new LinkedListBookReport();
 
     static String col[] = {"DATE", "MOST BORROWED BOOK", "TOTAL BORROWED BOOKS", "TOTAL FINE"};
     static DefaultTableModel reporttab = new DefaultTableModel(col, 0);
-    JScrollPane scpreports = new JScrollPane(table);
 
     private String date, mostBorrowed;
     private int totalBooksBorrowed;
@@ -50,16 +45,16 @@ public class adminReports extends JFrame {
         this.totalFine = totalFineCollected;
     }
 
-    public adminReports() {
-        weekly.add(new adminReports("2024-11-01", "Book A", 100, 50.0));
-        weekly.add(new adminReports("2024-11-08", "Book B", 120, 60.0));
-        weekly.add(new adminReports("2024-11-15", "Book C", 80, 40.0));
+     public adminReports() {
+        weeklyReports.insertAtEnd("2024-11-01", "Book A", 100, 50.0);
+        weeklyReports.insertAtEnd("2024-11-08", "Book B", 120, 60.0);
+        weeklyReports.insertAtEnd("2024-11-15", "Book C", 80, 40.0);
 
-        monthly.add(new adminReports("2024-10", "Book D", 300, 150.0));
-        monthly.add(new adminReports("2024-09", "Book E", 350, 200.0));
+        monthlyReports.insertAtEnd("2024-10", "Book D", 300, 150.0);
+        monthlyReports.insertAtEnd("2024-09", "Book E", 350, 200.0);
 
-        yearly.add(new adminReports("2023", "Book F", 1200, 600.0));
-        yearly.add(new adminReports("2022", "Book G", 1500, 750.0));
+        yearlyReports.insertAtEnd("2023", "Book F", 1200, 600.0);
+        yearlyReports.insertAtEnd("2022", "Book G", 1500, 750.0);
 
         pan3.setBackground(new Color(0x6F1D1B));
         pan3.setLayout(null);
@@ -168,84 +163,47 @@ public class adminReports extends JFrame {
         this.setResizable(false);
     }
 
-    private void updateReport()  { //enqueue
-        int selectedRow = table.getSelectedRow();
-
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a row to update!", "Warning", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
+ private void updateReport() {
         try {
-            String updatedDate = datef.getText();
-            String updatedMostBorr = mostborrf.getText();
-            int updatedTotalBorr = Integer.parseInt(totalborrf.getText());
-            double updatedTotalFine = Double.parseDouble(totalfinef.getText());
-
-            reporttab.setValueAt(updatedDate, selectedRow, 0);
-            reporttab.setValueAt(updatedMostBorr, selectedRow, 1);
-            reporttab.setValueAt(updatedTotalBorr, selectedRow, 2);
-            reporttab.setValueAt(updatedTotalFine, selectedRow, 3);
-
-            String category = (String) categoryBox.getSelectedItem();
-            switch (category) {
-                case "Weekly":
-                    weekly.get(selectedRow).date = updatedDate;
-                    weekly.get(selectedRow).mostBorrowed = updatedMostBorr;
-                    weekly.get(selectedRow).totalBooksBorrowed = updatedTotalBorr;
-                    weekly.get(selectedRow).totalFine = updatedTotalFine;
-                    break;
-                case "Monthly":
-                    monthly.get(selectedRow).date = updatedDate;
-                    monthly.get(selectedRow).mostBorrowed = updatedMostBorr;
-                    monthly.get(selectedRow).totalBooksBorrowed = updatedTotalBorr;
-                    monthly.get(selectedRow).totalFine = updatedTotalFine;
-                    break;
-                case "Yearly":
-                    yearly.get(selectedRow).date = updatedDate;
-                    yearly.get(selectedRow).mostBorrowed = updatedMostBorr;
-                    yearly.get(selectedRow).totalBooksBorrowed = updatedTotalBorr;
-                    yearly.get(selectedRow).totalFine = updatedTotalFine;
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(null, "Invalid category selected!", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                throw new Exception("No row selected.");
             }
 
-            JOptionPane.showMessageDialog(null, "Report updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            String date = datef.getText();
+            String mostBorrowedBook = mostborrf.getText();
+            int totalBorrowedBooks = Integer.parseInt(totalborrf.getText());
+            double totalFine = Double.parseDouble(totalfinef.getText());
 
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Invalid input. Please enter proper values!", "Error", JOptionPane.ERROR_MESSAGE);
+            String category = (String) categoryBox.getSelectedItem();
+            if ("Weekly".equals(category)) {
+                weeklyReports.updateReport(selectedRow, date, mostBorrowedBook, totalBorrowedBooks, totalFine);
+            } else if ("Monthly".equals(category)) {
+                monthlyReports.updateReport(selectedRow, date, mostBorrowedBook, totalBorrowedBooks, totalFine);
+            } else if ("Yearly".equals(category)) {
+                yearlyReports.updateReport(selectedRow, date, mostBorrowedBook, totalBorrowedBooks, totalFine);
+            }
+
+            JOptionPane.showMessageDialog(this, "Report updated successfully.");
+            viewReport();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error updating report: " + e.getMessage());
         }
     }
 
-    private void viewReport() { //dequeue
-        reporttab.setRowCount(0);
-
-        LinkedList<adminReports> selectedList;
-        switch (categoryBox.getSelectedItem().toString()) {
-            case "Weekly":
-                selectedList = weekly;
-                break;
-            case "Monthly":
-                selectedList = monthly;
-                break;
-            case "Yearly":
-                selectedList = yearly;
-                break;
-            default:
-                JOptionPane.showMessageDialog(null, "Invalid category!", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+    private void viewReport() {
+        String category = (String) categoryBox.getSelectedItem();
+        if ("Weekly".equals(category)) {
+            weeklyReports.displayReports(reporttab);
+        } else if ("Monthly".equals(category)) {
+            monthlyReports.displayReports(reporttab);
+        } else if ("Yearly".equals(category)) {
+            yearlyReports.displayReports(reporttab);
         }
-
-        for (adminReports report : selectedList) {
-            reporttab.addRow(new Object[]{report.date, report.mostBorrowed, report.totalBooksBorrowed, report.totalFine});
-        }
-
-        JOptionPane.showMessageDialog(null, "Reports loaded successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
     }
-
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new adminReports().setVisible(true));
+        adminReports adm = new adminReports();
+        adm.setVisible(true);
     }
 }
+
