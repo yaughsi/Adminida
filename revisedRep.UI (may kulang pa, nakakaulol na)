@@ -1,0 +1,221 @@
+package AdminLib;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
+public class adminGenRep extends JFrame {
+    private JPanel pan01 = new JPanel();
+    private JPanel pan02 = new JPanel();
+    private JPanel searchPanel = new JPanel();
+    private JLabel genreplbl = new JLabel("Generate Reports");
+    private JLabel repType = new JLabel("Report Type");
+    private JTable reportTable = new JTable();
+    private JScrollPane reportTableSCP = new JScrollPane(reportTable);
+    private JTextField searchField = new JTextField();
+    private JButton generateReport = new JButton("Generate Report");
+    private JButton deleteReport = new JButton("Delete Report");
+    private JButton updateReport = new JButton("Update Report");
+    private JButton searchbtn = new JButton("s");
+    private JComboBox<String> reportCategory = new JComboBox<>(new String[]{"Borrow Report", "Return Report", "Fine Report", "Books Added", "Disposed Books"});
+    private JComboBox<String> sortbyDate = new JComboBox<>(new String[]{"Weekly", "Monthly", "Yearly"});
+    private static DefaultTableModel reporttab = new DefaultTableModel();
+    
+    static LinkedListGenRep Reports = new LinkedListGenRep();
+
+    public adminGenRep() {
+        // Panel and Layout Setup
+        pan01.setBounds(0, 86, 1483, 810);
+        pan01.setBackground(new Color(0x6F1D1B));
+        pan01.setLayout(null);
+
+        pan02.setLayout(null);
+        pan02.setBackground(new Color(0xD9D9D9));
+        pan02.setBounds(0, 0, 478, 1020);
+
+        // Labels and Table Setup
+        genreplbl.setBounds(550, 19, 590, 95);
+        genreplbl.setFont(new Font("Bebas Neue", Font.BOLD, 64));
+        genreplbl.setForeground(new Color(0xBB9457));
+
+        reportTable.setModel(reporttab);
+        reportTableSCP.setBounds(571, 320, 890, 420);
+
+        repType.setBounds(557, 113, 310, 30);
+        repType.setFont(new Font("Bebas Neue", Font.BOLD, 24));
+        repType.setForeground(new Color(0xBB9457));
+
+        reportCategory.setBounds(557, 149, 310, 47);
+        reportCategory.setBackground(new Color(0xBB9457));
+        reportCategory.setFont(new Font("Bebas Neue", Font.BOLD, 18));
+        reportCategory.setForeground(new Color(0x6F1D1B));
+        reportCategory.addActionListener(e -> {
+            String selectedReport = (String) reportCategory.getSelectedItem();
+            headerSetting(selectedReport);
+        });
+
+        generateReport.setBounds(559, 247, 210, 47);
+        generateReport.setBackground(new Color(0xBB9457));
+        generateReport.setFont(new Font("Bebas Neue", Font.BOLD, 18));
+        generateReport.setForeground(new Color(0x6F1D1B));
+        generateReport.addActionListener(e -> headerSetting((String) reportCategory.getSelectedItem()));
+
+        deleteReport.setBounds(789, 247, 210, 47);
+        deleteReport.setBackground(new Color(0xBB9457));
+        deleteReport.setFont(new Font("Bebas Neue", Font.BOLD, 18));
+        deleteReport.setForeground(new Color(0x6F1D1B));
+        
+
+        updateReport.setBounds(1019, 247, 210, 47);
+        updateReport.setBackground(new Color(0xBB9457));
+        updateReport.setFont(new Font("Bebas Neue", Font.BOLD, 18));
+        updateReport.setForeground(new Color(0x6F1D1B));
+
+        searchPanel.setLayout(null);
+        searchPanel.setBounds(887, 149, 310, 47);
+        searchPanel.setBackground(new Color(0xBB9457));
+
+        searchField.setBounds(0, 0, 270, 47);
+        searchField.setBackground(new Color(0xBB9457));
+        searchField.setFont(new Font("Bebas Neue", Font.BOLD, 18));
+        searchField.setForeground(new Color(0x6F1D1B));
+
+        searchbtn.setBounds(310, 0, 40, 47);
+        searchbtn.setBackground(new Color(0xBB9457));
+        searchbtn.setFont(new Font("Bebas Neue", Font.BOLD, 18));
+        searchbtn.setForeground(new Color(0xFFFFFF));
+
+        searchPanel.add(searchField);
+        searchPanel.add(searchbtn);
+
+        pan01.add(pan02);
+        pan01.add(reportTableSCP);
+        pan01.add(genreplbl);
+        pan01.add(repType);
+        pan01.add(reportCategory);
+        pan01.add(generateReport);
+        pan01.add(deleteReport);
+        pan01.add(updateReport);
+        pan01.add(searchPanel);
+
+        this.add(pan01);
+        this.setSize(1537, 875);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setTitle("Account Management");
+        this.setResizable(false);
+    }
+
+    private static void headerSetting(String reportType) {
+        reporttab.setRowCount(0);
+        reporttab.setColumnCount(0);
+
+        String[] headers;
+        Object[][] data;
+
+        switch (reportType) {
+            case "Borrow Report":
+                headers = new String[]{"Transaction ID", "User ID", "ISBN", "Date Borrowed", "Due Date"};
+                data = new Object[][]{
+                    {"1", "User1", "ISBN001", "2023-12-01", "2023-12-15"},
+                    {"2", "User2", "ISBN002", "2023-12-05", "2023-12-19"}
+                };
+                break;
+            case "Return Report":
+                headers = new String[]{"Transaction ID", "User ID", "ISBN", "Return Date", "Fine"};
+                data = new Object[][]{
+                    {"3", "User3", "ISBN003", "2023-12-10", "$0.00"},
+                    {"4", "User4", "ISBN004", "2023-12-12", "$1.50"}
+                };
+                break;
+            case "Fine Report":
+                headers = new String[]{"ID", "Book Title", "Member Name", "Fine Amount"};
+                data = new Object[][]{
+                    {"5", "Book1", "Member1", "$5.00"},
+                    {"6", "Book2", "Member2", "$2.50"}
+                };
+                break;
+            case "Books Added":
+                headers = new String[]{"ISBN", "Genre", "Quantity", "Status"};
+                data = new Object[][]{
+                    {"5", "Book1", "Member1", "$5.00"},
+                    {"6", "Book2", "Member2", "$2.50"}
+                };
+                break;
+            case "Disposed Books":
+                headers = new String[]{"ISBN", "Genre", "Quantity", "Issue"};
+                data = new Object[][]{
+                    {"1234", "Book1", "13", "Damaged"},
+                    {"4567", "Book2", "2", "Old"}
+                };
+                break;
+            default:
+                headers = new String[]{"No Data Available"};
+                data = new Object[0][];
+                break;
+        }
+
+        reporttab.setColumnIdentifiers(headers);
+        for (Object[] row : data) {
+            reporttab.addRow(row);
+        }
+        JOptionPane.showMessageDialog(null, "Report generated successfully", "Success!", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+//    private void searchReports() {
+//    String searchText = searchField.getText().trim();
+//
+//    if (searchText.isEmpty()) {
+//        JOptionPane.showMessageDialog(this, "Please enter an ISBN or relevant data to search.", "Error", JOptionPane.ERROR_MESSAGE);
+//        return;
+//    }
+//
+//    String selectedCategory = (String) reportCategory.getSelectedItem();
+//
+//    reporttab.setRowCount(0);
+//
+//    NodeReports current = Reports.getHead(); 
+//    boolean found = false;
+//
+//    while (current != null) {
+//        boolean matches = 
+//            (String.valueOf(current.isbn).contains(searchText) ||  
+//            (current.title != null && current.title.toLowerCase().contains(searchText.toLowerCase()))) && 
+//            (selectedCategory.equals("All Reports") || current.category.equalsIgnoreCase(selectedCategory)); 
+//
+//        if (matches) {
+//            // Add the matching data as a new row in the table
+//            reporttab.addRow(new Object[]{
+//                current.isbn,  
+//                current.title,   
+//                current.category,  
+//                current.date,      
+//                current.additionalData 
+//            });
+//            found = true;
+//        }
+//
+//        // Move to the next node
+//        current = current.next;
+//    }
+//    if (!found) {
+//        JOptionPane.showMessageDialog(this, "No results found.", "Information", JOptionPane.INFORMATION_MESSAGE);
+//    }
+//}
+//    private boolean verifyAdminPassword(String enteredPassword) {
+//    return user.getPassword().equals(enteredPassword);
+//} alt only
+    
+    private boolean verifyAdminPassword(String enteredPassword) {
+    final String adminPassword = "admin123"; 
+    return adminPassword.equals(enteredPassword);
+}
+    
+    public static void main(String[] args) {
+        adminGenRep adminGenRep = new adminGenRep();
+        adminGenRep.setVisible(true);
+    }
+}
